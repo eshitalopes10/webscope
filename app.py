@@ -12,9 +12,9 @@ st.write("Pick a domain, type a query, and get clickable results. Download as CS
 EXA_API_KEY = None
 # Prefer Streamlit Secrets (on Streamlit Cloud) but fall back to environment variable locally
 try:
-    EXA_API_KEY = st.secrets["EXA_API_KEY"]
+    EXA_API_KEY = st.secrets["7b067e89-9bfe-406a-96e4-946e32036224"]
 except Exception:
-    EXA_API_KEY = os.environ.get("EXA_API_KEY")
+    EXA_API_KEY = os.environ.get("7b067e89-9bfe-406a-96e4-946e32036224")
 
 if not EXA_API_KEY:
     st.error("Missing Exa API key. Set EXA_API_KEY in Streamlit Secrets (cloud) or as an env var locally.")
