@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import streamlit as st
 from exa_py import Exa
-import validators
 from urllib.parse import urlparse
 
 # ========================
@@ -60,7 +59,7 @@ body {background-color:#0E0E0E; color:#FFF; font-family:'Segoe UI', sans-serif;}
 .result-content a {color:#4DA6FF; font-size:14px; text-decoration:none;}
 .result-content a:hover {text-decoration:underline;}
 .result-content p {color:#CCCCCC; font-size:15px;}
-.css-1d391kg {background-color:#1C1C2E !important;} /* Sidebar dark*/
+.css-1d391kg {background-color:#1C1C2E !important;}
 </style>
 
 <script>
@@ -135,12 +134,16 @@ domain_map = {
 }
 
 # ========================
-# Helper: Extract domain name for tags
+# Helper: Extract domain name for tags (no validators needed)
 # ========================
 def get_domain(url):
-    if validators.url(url):
-        return urlparse(url).netloc.replace("www.","")
-    return "unknown"
+    try:
+        parsed = urlparse(url)
+        if parsed.netloc:
+            return parsed.netloc.replace("www.","")
+        return "unknown"
+    except:
+        return "unknown"
 
 # ========================
 # Search Logic
@@ -178,7 +181,6 @@ if search_button:
 
             st.subheader("✨ Search Results")
             for i, row in df.iterrows():
-                # Optional favicon using Google favicon service
                 favicon_url = f"https://www.google.com/s2/favicons?domain={row['domain']}" if row['domain'] != "unknown" else ""
                 st.markdown(f"""
                 <div class="result-card">
@@ -192,7 +194,6 @@ if search_button:
                 </div>
                 """, unsafe_allow_html=True)
 
-            # CSV Download
             csv_bytes = df.to_csv(index=False).encode("utf-8")
             st.download_button(
                 "⬇️ Download results as CSV",
