@@ -9,7 +9,7 @@ st.title("🔎 Exa Search — Live Demo")
 st.write("Pick a domain, type a query, and get clickable results. Download as CSV.")
 
 # --- Get API key ---
-EXA_API_KEY = None
+EXA_API_KEY = 7b067e89-9bfe-406a-96e4-946e32036224
 # Prefer Streamlit Secrets (on Streamlit Cloud) but fall back to environment variable locally
 try:
     EXA_API_KEY = st.secrets["7b067e89-9bfe-406a-96e4-946e32036224"]
