@@ -14,42 +14,23 @@ st.set_page_config(page_title="Exa Search — Demo", layout="wide")
 try:
     EXA_API_KEY = st.secrets["EXA_API_KEY"]
 except Exception:
-    # fallback: environment variable or hardcoded for local testing
     EXA_API_KEY = os.environ.get("EXA_API_KEY", "7b067e89-9bfe-406a-96e4-946e32036224")
 
 if not EXA_API_KEY:
-    st.error("Missing Exa API key. Please set it in Streamlit Secrets or as an environment variable.")
+    st.error("❌ Missing Exa API key. Please set it in Streamlit Secrets or as an environment variable.")
     st.stop()
 
 exa = Exa(EXA_API_KEY)
 
 # ========================
-# Sidebar (Quick Examples)
-# ========================
-st.sidebar.title("⚡ Quick Examples")
-st.sidebar.markdown("- 🍲 `garlic naan recipe`")
-st.sidebar.markdown("- 💻 `react file upload component`")
-st.sidebar.markdown("- 📰 `AI regulation India 2025`")
-st.sidebar.markdown("- 🎥 `frontend tutorial`")
-
-# ========================
-# Header with Styling
-# ========================
-st.markdown("""
-    <h1 style='text-align: center; color: #6C63FF; font-size:48px;'>
-        🔍 Exa Search
-    </h1>
-    <p style='text-align: center; color: #CCCCCC; font-size:18px;'>
-        Pick a domain, type a query, and get instant results. <br>
-        Beautiful UI • Fast Results • CSV Export
-    </p>
-""", unsafe_allow_html=True)
-
-# ========================
-# Hover Effect CSS
+# CSS Styling (UI + Hover)
 # ========================
 st.markdown("""
     <style>
+    /* App background + font */
+    body { font-family: 'Segoe UI', sans-serif; background-color:#1E1E2F; }
+
+    /* Result Cards */
     .result-card {
         padding:15px;
         margin-bottom:15px;
@@ -62,7 +43,62 @@ st.markdown("""
         transform: translateY(-4px);
         box-shadow: 0px 6px 14px rgba(108,99,255,0.6);
     }
+
+    /* History Cards */
+    .history-card {
+        padding:10px;
+        margin-bottom:10px;
+        border-radius:8px;
+        background-color:#2E2E40;
+        transition: all 0.3s ease-in-out;
+        cursor: pointer;
+    }
+    .history-card:hover {
+        transform: translateX(5px);
+        background-color:#3A3A55;
+    }
     </style>
+""", unsafe_allow_html=True)
+
+# ========================
+# Sidebar (Quick Examples + History)
+# ========================
+st.sidebar.title("⚡ Quick Examples")
+examples = [
+    "🍲 garlic naan recipe",
+    "💻 react file upload component",
+    "📰 AI regulation India 2025",
+    "🎥 frontend tutorial"
+]
+for e in examples:
+    st.sidebar.markdown(f"- {e}")
+
+st.sidebar.markdown("---")
+st.sidebar.title("🕘 Search History")
+
+if "history" not in st.session_state:
+    st.session_state.history = []
+
+# Show history in sidebar
+if st.session_state.history:
+    for h in st.session_state.history[::-1]:  # latest first
+        st.sidebar.markdown(
+            f"<div class='history-card'>{h}</div>", unsafe_allow_html=True
+        )
+else:
+    st.sidebar.info("No history yet.")
+
+# ========================
+# Header
+# ========================
+st.markdown("""
+    <h1 style='text-align: center; color: #6C63FF; font-size:48px;'>
+        🔍 Exa Search
+    </h1>
+    <p style='text-align: center; color: #CCCCCC; font-size:18px;'>
+        Search smarter. Explore domains. Export results.<br>
+        Beautiful UI • Hover Effects • Search History
+    </p>
 """, unsafe_allow_html=True)
 
 # ========================
@@ -84,7 +120,7 @@ with col_left:
     search_button = st.button("🔍 Search")
 
 with col_right:
-    st.info("Use the sidebar 👉 for quick example searches!")
+    st.info("👉 Use the sidebar for quick examples & history")
 
 # ========================
 # Domain Mapping
@@ -105,6 +141,10 @@ if search_button:
         st.warning("⚠️ Please enter a search query.")
     else:
         include_domains = domain_map.get(domain_choice)
+
+        # Save to history
+        st.session_state.history.append(query)
+
         with st.spinner("🔎 Searching…"):
             try:
                 response = exa.search(
@@ -151,3 +191,4 @@ if search_button:
                 file_name="exa_results.csv",
                 mime="text/csv"
             )
+
