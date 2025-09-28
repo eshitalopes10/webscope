@@ -30,36 +30,50 @@ if not EXA_API_KEY:
 exa = Exa(EXA_API_KEY)
 
 # ========================
-# CSS Styling
+# CSS Styling + Animations
 # ========================
 st.markdown("""
 <style>
-body {background-color:#0E0E0E; color:#FFF; font-family:'Segoe UI', sans-serif;}
+body {background-color:#0E0E0E; color:#FFF; font-family:'Segoe UI', sans-serif; scroll-behavior: smooth;}
 .hero {
     height: 80vh; display:flex; flex-direction:column; justify-content:center; align-items:center;
     text-align:center; background: linear-gradient(180deg, #1B1B1B 0%, #0E0E0E 100%);
     margin-bottom:50px;
 }
-.hero h1 {font-size:80px; color:#6C63FF; margin:0;}
-.hero p {font-size:24px; color:#CCCCCC; margin-top:20px;}
+.hero h1 {font-size:90px; color:#6C63FF; margin:0; font-weight:bold;}
+.hero p {font-size:26px; color:#CCCCCC; margin-top:20px; max-width:700px;}
 .hero button {
-    margin-top:30px; padding:15px 40px; font-size:20px; border:none; border-radius:10px;
+    margin-top:30px; padding:18px 45px; font-size:22px; border:none; border-radius:12px;
     background-color:#6C63FF; color:#FFF; cursor:pointer; transition: all 0.3s ease-in-out;
 }
 .hero button:hover {background-color:#4E49C5; transform:translateY(-3px);}
+
+/* Search Cards */
 .result-card {
     padding:20px; margin-bottom:20px; border-radius:15px; background-color:#1C1C2E;
-    box-shadow:0px 4px 12px rgba(0,0,0,0.5); transition:all 0.3s ease-in-out;
-    display:flex; gap:15px;
+    box-shadow:0px 4px 12px rgba(0,0,0,0.5); display:flex; gap:15px; opacity:0; transform: translateY(20px);
+    animation: fadeInUp 0.6s forwards;
 }
-.result-card:hover {transform:translateY(-5px); box-shadow:0px 8px 20px rgba(108,99,255,0.6);}
-.result-card img {width:40px; height:40px; border-radius:5px;}
+.result-card:hover {transform: translateY(-5px); box-shadow:0px 8px 20px rgba(108,99,255,0.6);}
+.result-card img {width:50px; height:50px; border-radius:8px;}
 .result-content {flex:1;}
-.result-content h4 {margin:0; color:#6C63FF;}
+.result-content h4 {margin:0; color:#6C63FF; font-size:20px;}
 .result-content a {color:#4DA6FF; font-size:14px; text-decoration:none;}
 .result-content a:hover {text-decoration:underline;}
-.result-content p {color:#CCCCCC; font-size:15px;}
+.result-content p {color:#CCCCCC; font-size:15px; margin-top:5px; margin-bottom:5px;}
+.result-content small {color:#888; font-size:12px;}
+
+/* Fade-in animation */
+@keyframes fadeInUp {
+    to {opacity:1; transform:translateY(0);}
+}
+
+/* Sidebar */
 .css-1d391kg {background-color:#1C1C2E !important;}
+
+/* CSV button */
+.stDownloadButton button {background-color:#6C63FF; color:white; font-weight:bold; border-radius:8px;}
+.stDownloadButton button:hover {background-color:#4E49C5;}
 </style>
 
 <script>
@@ -67,6 +81,15 @@ function scrollToSearch() {
     const el = document.getElementById('search-section');
     if(el) el.scrollIntoView({behavior:'smooth'});
 }
+
+// Stagger animation for multiple cards
+function animateCards() {
+    const cards = document.querySelectorAll('.result-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = (index * 0.1) + 's';
+    });
+}
+window.onload = animateCards;
 </script>
 """, unsafe_allow_html=True)
 
@@ -105,7 +128,6 @@ st.sidebar.markdown("- 🎥 `frontend tutorial`")
 # UI Controls
 # ========================
 col_left, col_right = st.columns([3, 1])
-
 with col_left:
     query = st.text_input(
         "Search query",
@@ -134,14 +156,12 @@ domain_map = {
 }
 
 # ========================
-# Helper: Extract domain name for tags (no validators needed)
+# Helper: Extract domain name
 # ========================
 def get_domain(url):
     try:
         parsed = urlparse(url)
-        if parsed.netloc:
-            return parsed.netloc.replace("www.","")
-        return "unknown"
+        return parsed.netloc.replace("www.","") if parsed.netloc else "unknown"
     except:
         return "unknown"
 
@@ -178,8 +198,8 @@ if search_button:
             st.info("ℹ️ No results found.")
         else:
             df = pd.DataFrame(results)
-
             st.subheader("✨ Search Results")
+
             for i, row in df.iterrows():
                 favicon_url = f"https://www.google.com/s2/favicons?domain={row['domain']}" if row['domain'] != "unknown" else ""
                 st.markdown(f"""
@@ -187,9 +207,9 @@ if search_button:
                     <img src="{favicon_url}" alt="favicon">
                     <div class="result-content">
                         <h4>{i+1}. {row['title']}</h4>
-                        <a href="{row['url']}" target="_blank">{row['url']}</a>
+                        <a href="{row['url']}" target="_blank">Open Link</a>
                         <p>{row['snippet']}</p>
-                        <small style="color:#888;">Source: {row['domain']}</small>
+                        <small>Source: {row['domain']}</small>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
