@@ -29,33 +29,37 @@ exa = Exa(EXA_API_KEY)
 st.markdown("""
 <style>
 body {background-color:#0E0E0E; color:#FFF; font-family:'Segoe UI', sans-serif; scroll-behavior: smooth;}
+/* Front page hero */
 .hero {
     height: 80vh; display:flex; flex-direction:column; justify-content:center; align-items:center;
-    text-align:center; background: linear-gradient(180deg, #1B1B1B 0%, #0E0E0E 100%);
-    margin-bottom:50px;
+    text-align:center; background: linear-gradient(180deg, #2C1C54 0%, #0E0E0E 100%);
+    margin-bottom:50px; border-radius:12px;
 }
-.hero h1 {font-size:90px; color:#6C63FF; margin:0; font-weight:bold;}
-.hero p {font-size:26px; color:#CCCCCC; margin-top:20px; max-width:700px;}
+.hero h1 {font-size:90px; color:#FF6EC7; margin:0; font-weight:bold;}
+.hero p {font-size:26px; color:#F0F0F0; margin-top:20px; max-width:700px;}
 .hero button {
     margin-top:30px; padding:18px 45px; font-size:22px; border:none; border-radius:12px;
-    background-color:#6C63FF; color:#FFF; cursor:pointer; transition: all 0.3s ease-in-out;
+    background-color:#FF6EC7; color:#FFF; cursor:pointer; transition: all 0.3s ease-in-out;
 }
-.hero button:hover {background-color:#4E49C5; transform:translateY(-3px);}
+.hero button:hover {background-color:#D94FB3; transform:translateY(-3px);}
+
+/* Search section */
+#search-section {background: linear-gradient(180deg, #3C1C70 0%, #1C0E2E 100%); padding:40px; border-radius:12px;}
 
 /* Search Cards */
 .result-card {
-    padding:20px; margin-bottom:20px; border-radius:15px; background-color:#1C1C2E;
+    padding:20px; margin-bottom:20px; border-radius:15px; background-color:#4B1C7F;
     box-shadow:0px 4px 12px rgba(0,0,0,0.5); display:flex; gap:15px; opacity:0; transform: translateY(20px);
     animation: fadeInUp 0.6s forwards;
 }
-.result-card:hover {transform: translateY(-5px); box-shadow:0px 8px 20px rgba(108,99,255,0.6);}
+.result-card:hover {transform: translateY(-5px); box-shadow:0px 8px 20px rgba(255,110,199,0.6);}
 .result-card img {width:50px; height:50px; border-radius:8px;}
 .result-content {flex:1;}
-.result-content h4 {margin:0; color:#6C63FF; font-size:20px;}
-.result-content a {color:#4DA6FF; font-size:14px; text-decoration:none;}
+.result-content h4 {margin:0; color:#FF6EC7; font-size:20px;}
+.result-content a {color:#FFA3E0; font-size:14px; text-decoration:none;}
 .result-content a:hover {text-decoration:underline;}
-.result-content p {color:#CCCCCC; font-size:15px; margin-top:5px; margin-bottom:5px;}
-.result-content small {color:#888; font-size:12px;}
+.result-content p {color:#F0F0F0; font-size:15px; margin-top:5px; margin-bottom:5px;}
+.result-content small {color:#DDD; font-size:12px;}
 
 /* Fade-in animation */
 @keyframes fadeInUp {
@@ -63,36 +67,27 @@ body {background-color:#0E0E0E; color:#FFF; font-family:'Segoe UI', sans-serif; 
 }
 
 /* Sidebar / Most Searched */
-.most-searched h3 {color:#6C63FF; margin-bottom:10px;}
+.most-searched h3 {color:#FF6EC7; margin-bottom:10px;}
 .search-tag {
-    display:inline-block; background-color:#4E49C5; color:#FFF; padding:8px 15px; margin:5px;
+    display:inline-block; background-color:#D94FB3; color:#FFF; padding:8px 15px; margin:5px;
     border-radius:10px; cursor:pointer; transition: all 0.3s ease-in-out;
 }
-.search-tag:hover {background-color:#6C63FF; transform:translateY(-2px);}
-.css-1d391kg {background-color:#1C1C2E !important;}
+.search-tag:hover {background-color:#FF6EC7; transform:translateY(-2px);}
+.css-1d391kg {background-color:#2C1C3F !important;}
 
 /* CSV button */
-.stDownloadButton button {background-color:#6C63FF; color:white; font-weight:bold; border-radius:8px;}
-.stDownloadButton button:hover {background-color:#4E49C5;}
+.stDownloadButton button {background-color:#FF6EC7; color:white; font-weight:bold; border-radius:8px;}
+.stDownloadButton button:hover {background-color:#D94FB3;}
 </style>
 
 <script>
+// Scroll to search section
 function scrollToSearch() {
     const el = document.getElementById('search-section');
     if(el) el.scrollIntoView({behavior:'smooth'});
 }
 
-// Fill search box when tag clicked
-function fillSearch(query){
-    const input = window.parent.document.querySelector('input[type="text"]');
-    if(input){
-        input.value = query;
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        scrollToSearch();
-    }
-}
-
-// Stagger animation for multiple cards
+// Animate search cards
 function animateCards() {
     const cards = document.querySelectorAll('.result-card');
     cards.forEach((card, index) => {
@@ -110,7 +105,7 @@ st.markdown("""
 <div class="hero">
     <h1>WebScope</h1>
     <p>🔍 Explore the Web Instantly • Beautiful Dark UI • Fast Results • CSV Export</p>
-    <button onclick="scrollToSearch(); window.parent.document.querySelector('input[type=text]').focus();">Start Searching ⬇️</button>
+    <a href="#search-section"><button>Start Searching ⬇️</button></a>
 </div>
 """, unsafe_allow_html=True)
 
@@ -126,7 +121,7 @@ st.sidebar.markdown('<div class="most-searched"><h3>🔥 Most Searched</h3></div
 most_searched = ["garlic naan recipe", "React file upload", "AI regulation India 2025", "frontend tutorial", "chocolate chip cookies"]
 
 for query_tag in most_searched:
-    st.sidebar.markdown(f'<div class="search-tag" onclick="fillSearch(\'{query_tag}\')">{query_tag}</div>', unsafe_allow_html=True)
+    st.sidebar.markdown(f'<div class="search-tag" onclick="window.location.hash=\'search-section\';">{query_tag}</div>', unsafe_allow_html=True)
 
 # ========================
 # UI Controls
@@ -146,7 +141,7 @@ with col_left:
     search_button = st.button("🔍 Search")
 
 with col_right:
-    st.info("Click a 'Most Searched' tag to quickly search!")
+    st.info("Click a 'Most Searched' tag to scroll and search!")
 
 # ========================
 # Domain Mapping
