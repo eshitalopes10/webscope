@@ -122,9 +122,13 @@ if not st.session_state.show_search_ui:
         <button onclick="scrollToSearch(); window.parent.document.querySelector('input[type=text]').focus();">Start Searching ⬇️</button>
     </div>
     """, unsafe_allow_html=True)
-    if st.button("Go to Search Page"):
+
+    # Move this button outside nested logic
+    go_search = st.button("Go to Search Page")
+    if go_search:
         st.session_state.show_search_ui = True
-        st.experimental_rerun()
+        st.success("✅ Search page activated! Scroll down or click a Most Searched tag.")
+
 
 # ========================
 # Search Section Anchor
