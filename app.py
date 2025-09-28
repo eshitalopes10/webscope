@@ -14,6 +14,8 @@ st.set_page_config(page_title="WebScope — Exa Search Demo", layout="wide")
 # ========================
 if "show_search_ui" not in st.session_state:
     st.session_state.show_search_ui = False
+if "query_text" not in st.session_state:
+    st.session_state.query_text = ""
 
 # ========================
 # API Key Setup
@@ -68,7 +70,13 @@ body {background-color:#0E0E0E; color:#FFF; font-family:'Segoe UI', sans-serif; 
     to {opacity:1; transform:translateY(0);}
 }
 
-/* Sidebar */
+/* Sidebar / Most Searched */
+.most-searched h3 {color:#6C63FF; margin-bottom:10px;}
+.search-tag {
+    display:inline-block; background-color:#4E49C5; color:#FFF; padding:8px 15px; margin:5px;
+    border-radius:10px; cursor:pointer; transition: all 0.3s ease-in-out;
+}
+.search-tag:hover {background-color:#6C63FF; transform:translateY(-2px);}
 .css-1d391kg {background-color:#1C1C2E !important;}
 
 /* CSV button */
@@ -80,6 +88,16 @@ body {background-color:#0E0E0E; color:#FFF; font-family:'Segoe UI', sans-serif; 
 function scrollToSearch() {
     const el = document.getElementById('search-section');
     if(el) el.scrollIntoView({behavior:'smooth'});
+}
+
+// Fill search box when tag clicked
+function fillSearch(query){
+    const input = window.parent.document.querySelector('input[type="text"]');
+    if(input){
+        input.value = query;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        scrollToSearch();
+    }
 }
 
 // Stagger animation for multiple cards
@@ -101,11 +119,9 @@ if not st.session_state.show_search_ui:
     <div class="hero">
         <h1>WebScope</h1>
         <p>🔍 Explore the Web Instantly • Beautiful Dark UI • Fast Results • CSV Export</p>
-        <button onclick="scrollToSearch()">Start Searching ⬇️</button>
+        <button onclick="scrollToSearch(); window.parent.document.querySelector('input[type=text]').focus();">Start Searching ⬇️</button>
     </div>
     """, unsafe_allow_html=True)
-
-    # Button triggers session state
     if st.button("Go to Search Page"):
         st.session_state.show_search_ui = True
         st.experimental_rerun()
@@ -116,13 +132,13 @@ if not st.session_state.show_search_ui:
 st.markdown('<div id="search-section"></div>', unsafe_allow_html=True)
 
 # ========================
-# Sidebar (Quick Examples)
+# Sidebar / Most Searched
 # ========================
-st.sidebar.title("⚡ Quick Examples")
-st.sidebar.markdown("- 🍲 `garlic naan recipe`")
-st.sidebar.markdown("- 💻 `react file upload component`")
-st.sidebar.markdown("- 📰 `AI regulation India 2025`")
-st.sidebar.markdown("- 🎥 `frontend tutorial`")
+st.sidebar.markdown('<div class="most-searched"><h3>🔥 Most Searched</h3></div>', unsafe_allow_html=True)
+most_searched = ["garlic naan recipe", "React file upload", "AI regulation India 2025", "frontend tutorial", "chocolate chip cookies"]
+
+for query_tag in most_searched:
+    st.sidebar.markdown(f'<div class="search-tag" onclick="fillSearch(\'{query_tag}\')">{query_tag}</div>', unsafe_allow_html=True)
 
 # ========================
 # UI Controls
@@ -131,7 +147,7 @@ col_left, col_right = st.columns([3, 1])
 with col_left:
     query = st.text_input(
         "Search query",
-        value="",
+        value=st.session_state.query_text,
         placeholder="e.g. chocolate chip cookie recipe or React star rating component"
     )
     num_results = st.slider("Number of results", 1, 20, 5)
@@ -142,7 +158,7 @@ with col_left:
     search_button = st.button("🔍 Search")
 
 with col_right:
-    st.info("Use the sidebar 👉 for quick example searches!")
+    st.info("Click a 'Most Searched' tag to quickly search!")
 
 # ========================
 # Domain Mapping
@@ -168,10 +184,9 @@ def get_domain(url):
 # ========================
 # Search Logic
 # ========================
-if search_button:
-    if not query.strip():
-        st.warning("⚠️ Please enter a search query.")
-    else:
+if search_button or st.session_state.query_text:
+    if query.strip():
+        st.session_state.query_text = query
         include_domains = domain_map.get(domain_choice)
         with st.spinner("🔎 Searching…"):
             try:
