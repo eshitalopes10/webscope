@@ -1,3 +1,5 @@
 streamlit
 exa-py
 pandas
+requests
+streamlit-lottie
