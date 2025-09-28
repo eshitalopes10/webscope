@@ -10,14 +10,6 @@ from urllib.parse import urlparse
 st.set_page_config(page_title="WebScope — Exa Search Demo", layout="wide")
 
 # ========================
-# Session State
-# ========================
-if "show_search_ui" not in st.session_state:
-    st.session_state.show_search_ui = False
-if "query_text" not in st.session_state:
-    st.session_state.query_text = ""
-
-# ========================
 # API Key Setup
 # ========================
 try:
@@ -114,21 +106,13 @@ window.onload = animateCards;
 # ========================
 # Front Page Hero
 # ========================
-if not st.session_state.show_search_ui:
-    st.markdown("""
-    <div class="hero">
-        <h1>WebScope</h1>
-        <p>🔍 Explore the Web Instantly • Beautiful Dark UI • Fast Results • CSV Export</p>
-        <button onclick="scrollToSearch(); window.parent.document.querySelector('input[type=text]').focus();">Start Searching ⬇️</button>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Move this button outside nested logic
-    go_search = st.button("Go to Search Page")
-    if go_search:
-        st.session_state.show_search_ui = True
-        st.success("✅ Search page activated! Scroll down or click a Most Searched tag.")
-
+st.markdown("""
+<div class="hero">
+    <h1>WebScope</h1>
+    <p>🔍 Explore the Web Instantly • Beautiful Dark UI • Fast Results • CSV Export</p>
+    <button onclick="scrollToSearch(); window.parent.document.querySelector('input[type=text]').focus();">Start Searching ⬇️</button>
+</div>
+""", unsafe_allow_html=True)
 
 # ========================
 # Search Section Anchor
@@ -151,7 +135,7 @@ col_left, col_right = st.columns([3, 1])
 with col_left:
     query = st.text_input(
         "Search query",
-        value=st.session_state.query_text,
+        value="",
         placeholder="e.g. chocolate chip cookie recipe or React star rating component"
     )
     num_results = st.slider("Number of results", 1, 20, 5)
@@ -188,9 +172,10 @@ def get_domain(url):
 # ========================
 # Search Logic
 # ========================
-if search_button or st.session_state.query_text:
-    if query.strip():
-        st.session_state.query_text = query
+if search_button:
+    if not query.strip():
+        st.warning("⚠️ Please enter a search query.")
+    else:
         include_domains = domain_map.get(domain_choice)
         with st.spinner("🔎 Searching…"):
             try:
