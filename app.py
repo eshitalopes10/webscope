@@ -1,9 +1,7 @@
 import os
-import requests
 import pandas as pd
 import streamlit as st
 from exa_py import Exa
-from streamlit_lottie import st_lottie
 
 # ========================
 # Streamlit Page Config
@@ -11,21 +9,10 @@ from streamlit_lottie import st_lottie
 st.set_page_config(page_title="Exa Search — Demo", layout="wide")
 
 # ========================
-# Load Animation
-# ========================
-def load_lottieurl(url: str):
-    r = requests.get(url)
-    if r.status_code != 200:
-        return None
-    return r.json()
-
-lottie_search = load_lottieurl("https://assets9.lottiefiles.com/packages/lf20_totrpclr.json")
-
-# ========================
 # API Key Setup
 # ========================
 try:
-    EXA_API_KEY = st.secrets["7b067e89-9bfe-406a-96e4-946e32036224"]
+    EXA_API_KEY = st.secrets["EXA_API_KEY"]
 except Exception:
     # fallback: environment variable or hardcoded for local testing
     EXA_API_KEY = os.environ.get("EXA_API_KEY", "7b067e89-9bfe-406a-96e4-946e32036224")
@@ -59,10 +46,24 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ========================
-# Animation
+# Hover Effect CSS
 # ========================
-if lottie_search:
-    st_lottie(lottie_search, height=180, key="search")
+st.markdown("""
+    <style>
+    .result-card {
+        padding:15px;
+        margin-bottom:15px;
+        border-radius:12px;
+        background-color:#2C2C3E;
+        box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
+        transition: all 0.3s ease-in-out;
+    }
+    .result-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0px 6px 14px rgba(108,99,255,0.6);
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # ========================
 # UI Controls
@@ -129,12 +130,11 @@ if search_button:
         else:
             df = pd.DataFrame(results)
 
-            # Stylish Results in Card Layout
+            # Stylish Results in Card Layout with Hover Effect
             st.subheader("✨ Search Results")
             for i, row in df.iterrows():
                 st.markdown(f"""
-                <div style="padding:15px; margin-bottom:15px; border-radius:12px;
-                            background-color:#2C2C3E; box-shadow: 0px 4px 8px rgba(0,0,0,0.3);">
+                <div class="result-card">
                     <h4 style="margin:0; color:#6C63FF;">{i+1}. {row['title']}</h4>
                     <a href="{row['url']}" target="_blank" style="color:#4DA6FF; font-size:14px;">
                         {row['url']}
@@ -151,5 +151,3 @@ if search_button:
                 file_name="exa_results.csv",
                 mime="text/csv"
             )
-
-
