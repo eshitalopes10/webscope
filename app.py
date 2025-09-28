@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 # ========================
 # Page Config
 # ========================
-st.set_page_config(page_title="WebScope — Exa Search Demo", layout="wide")
+st.set_page_config(page_title="WebScope — AI Search Engine", layout="wide")
 
 # ========================
 # API Key Setup
@@ -24,12 +24,13 @@ if not EXA_API_KEY:
 exa = Exa(EXA_API_KEY)
 
 # ========================
-# CSS Styling + Animations
+# CSS + JS Styling
 # ========================
 st.markdown("""
 <style>
 body {background-color:#0E0E0E; color:#FFF; font-family:'Segoe UI', sans-serif; scroll-behavior: smooth;}
-/* Front page hero */
+
+/* Hero Section */
 .hero {
     height: 80vh; display:flex; flex-direction:column; justify-content:center; align-items:center;
     text-align:center; background: linear-gradient(180deg, #2C1C54 0%, #0E0E0E 100%);
@@ -43,7 +44,7 @@ body {background-color:#0E0E0E; color:#FFF; font-family:'Segoe UI', sans-serif; 
 }
 .hero button:hover {background-color:#D94FB3; transform:translateY(-3px);}
 
-/* Search section */
+/* Search Section */
 #search-section {background: linear-gradient(180deg, #3C1C70 0%, #1C0E2E 100%); padding:40px; border-radius:12px;}
 
 /* Search Cards */
@@ -62,9 +63,7 @@ body {background-color:#0E0E0E; color:#FFF; font-family:'Segoe UI', sans-serif; 
 .result-content small {color:#DDD; font-size:12px;}
 
 /* Fade-in animation */
-@keyframes fadeInUp {
-    to {opacity:1; transform:translateY(0);}
-}
+@keyframes fadeInUp { to {opacity:1; transform:translateY(0);} }
 
 /* Sidebar / Most Searched */
 .most-searched h3 {color:#FF6EC7; margin-bottom:10px;}
@@ -115,7 +114,7 @@ st.markdown("""
 st.markdown('<div id="search-section"></div>', unsafe_allow_html=True)
 
 # ========================
-# Sidebar / Most Searched
+# Sidebar: Most Searched
 # ========================
 st.sidebar.markdown('<div class="most-searched"><h3>🔥 Most Searched</h3></div>', unsafe_allow_html=True)
 most_searched = ["garlic naan recipe", "React file upload", "AI regulation India 2025", "frontend tutorial", "chocolate chip cookies"]
