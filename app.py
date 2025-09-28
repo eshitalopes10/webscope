@@ -1,4 +1,3 @@
-# app.py
 import os
 import streamlit as st
 import pandas as pd
@@ -9,12 +8,11 @@ st.title("🔎 Exa Search — Live Demo")
 st.write("Pick a domain, type a query, and get clickable results. Download as CSV.")
 
 # --- Get API key ---
-EXA_API_KEY = 7b067e89-9bfe-406a-96e4-946e32036224
 # Prefer Streamlit Secrets (on Streamlit Cloud) but fall back to environment variable locally
 try:
     EXA_API_KEY = st.secrets["7b067e89-9bfe-406a-96e4-946e32036224"]
 except Exception:
-    EXA_API_KEY = os.environ.get("7b067e89-9bfe-406a-96e4-946e32036224")
+    EXA_API_KEY = os.environ.get("EXA_API_KEY", "7b067e89-9bfe-406a-96e4-946e32036224")
 
 if not EXA_API_KEY:
     st.error("Missing Exa API key. Set EXA_API_KEY in Streamlit Secrets (cloud) or as an env var locally.")
@@ -67,7 +65,6 @@ if search_button:
 
         results = []
         for r in getattr(response, "results", []):
-            # Some result objects may not have all fields; use getattr safely
             results.append({
                 "title": getattr(r, "title", "No title"),
                 "url": getattr(r, "url", ""),
@@ -78,6 +75,7 @@ if search_button:
             st.info("No results found.")
         else:
             df = pd.DataFrame(results)
+
             # Display clickable list
             for i, row in df.iterrows():
                 st.markdown(f"**{i+1}. {row['title']}**  \n[{row['url']}]({row['url']})  \n{row['snippet']}\n---")
@@ -85,3 +83,4 @@ if search_button:
             # Provide CSV download
             csv_bytes = df.to_csv(index=False).encode("utf-8")
             st.download_button("⬇️ Download results as CSV", csv_bytes, file_name="exa_results.csv", mime="text/csv")
+
