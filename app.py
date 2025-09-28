@@ -111,7 +111,7 @@ st.markdown("""
 st.markdown("""
 <div class="hero">
     <h1>WebScope</h1>
-    <p>🔍 Explore the Web Instantly • Beautiful Dark UI • Fast Results • CSV Export</p>
+    <p>🔍 Explore the Web Instantly • Fast Results • CSV Export</p>
     <button onclick="scrollToSearch()">Start Searching ⬇️</button>
 </div>
 """, unsafe_allow_html=True)
@@ -119,7 +119,7 @@ st.markdown("""
 # ========================
 # Sidebar (Quick Examples)
 # ========================
-st.sidebar.title("⚡ Quick Examples")
+st.sidebar.title("⚡ Most Trending")
 st.sidebar.markdown("- 🍲 `garlic naan recipe`")
 st.sidebar.markdown("- 💻 `react file upload component`")
 st.sidebar.markdown("- 📰 `AI regulation India 2025`")
